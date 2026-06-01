@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Update KPI Progress - KPITrack{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{% url 'ekpi_list' %}">KPI Tracking</a></li><li class="breadcrumb-item active">Update Progress</li></ol></nav>
+  <h4 class="fw-bold mb-0">Update KPI Progress</h4>
+</div>
+<div class="row">
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="text-muted mb-3">KPI Details</h6>
+        <div class="mb-2"><strong>KPI:</strong> {{ ekpi.kpi.name }}</div>
+        <div class="mb-2"><strong>Employee:</strong> {{ ekpi.employee.full_name }}</div>
+        <div class="mb-2"><strong>Target:</strong> {{ ekpi.target_value }} {{ ekpi.kpi.get_unit_display }}</div>
+        <div class="mb-2"><strong>Period:</strong> {{ ekpi.period_start }} – {{ ekpi.period_end }}</div>
+        {% if ekpi.achievement_percentage %}
+        <div class="mt-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Current Achievement</span>
+            <strong>{{ ekpi.achievement_percentage }}%</strong>
+          </div>
+          <div class="progress" style="height:8px">
+            <div class="progress-bar" style="width:{% if ekpi.achievement_percentage > 100 %}100{% else %}{{ ekpi.achievement_percentage|floatformat:0 }}{% endif %}%"></div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card"><div class="card-body">
+      <form method="post">{% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {% if field.field.widget.input_type == 'textarea' %}
+            <textarea name="{{ field.html_name }}" class="form-control" rows="3">{{ field.value|default:'' }}</textarea>
+          {% else %}
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="form-control" value="{{ field.value|default:'' }}">
+          {% endif %}
+          {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Update Progress</button>
+          <a href="{% url 'ekpi_list' %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

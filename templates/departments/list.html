@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Departments - KPITrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Departments</h4>
+    <p class="text-muted mb-0">Manage organizational structure</p>
+  </div>
+  <a href="{% url 'department_create' %}" class="btn btn-primary"><i class="bx bx-plus me-1"></i>Add Department</a>
+</div>
+<div class="row">
+  {% for dept in departments %}
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="avatar bg-label-primary rounded">
+            <i class="bx bx-building"></i>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'department_edit' dept.pk %}"><i class="bx bx-edit me-2"></i>Edit</a></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'department_delete' dept.pk %}"><i class="bx bx-trash me-2"></i>Delete</a></li>
+            </ul>
+          </div>
+        </div>
+        <h5 class="mb-1">{{ dept.name }}</h5>
+        <p class="text-muted small mb-3">{{ dept.description|default:"No description." }}</p>
+        <div class="d-flex justify-content-between">
+          <div>
+            <h6 class="mb-0 text-primary fw-bold">{{ dept.emp_count }}</h6>
+            <small class="text-muted">Employees</small>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold">{{ dept.manager.get_full_name|default:"—" }}</h6>
+            <small class="text-muted">Manager</small>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer bg-transparent">
+        <a href="{% url 'employee_list' %}?dept={{ dept.pk }}" class="btn btn-sm btn-outline-primary w-100">View Employees</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="card"><div class="card-body text-center py-5 text-muted">No departments. <a href="{% url 'department_create' %}">Add one</a>.</div></div></div>
+  {% endfor %}
+</div>
+{% endblock %}

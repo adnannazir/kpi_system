@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Performance Reviews - KPITrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Performance Reviews</h4>
+    <p class="text-muted mb-0">Track and manage employee evaluations</p>
+  </div>
+  <a href="{% url 'review_create' %}" class="btn btn-primary"><i class="bx bx-plus me-1"></i>New Review</a>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr><th>Employee</th><th>Reviewer</th><th>Type</th><th>Date</th><th>Scores</th><th>Overall</th><th>Rating</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for review in reviews %}
+        <tr>
+          <td>
+            <a href="{% url 'employee_detail' review.employee.pk %}" class="fw-semibold text-body">{{ review.employee.full_name }}</a>
+            <small class="d-block text-muted">{{ review.employee.job_title }}</small>
+          </td>
+          <td>{{ review.reviewer.get_full_name|default:review.reviewer.username }}</td>
+          <td><span class="badge bg-label-secondary">{{ review.get_review_type_display }}</span></td>
+          <td>{{ review.review_date|date:"M d, Y" }}</td>
+          <td>
+            <small class="text-muted">
+              Q:{{ review.quality_score }} P:{{ review.productivity_score }} T:{{ review.teamwork_score }}
+            </small>
+          </td>
+          <td><strong>{{ review.overall_score }}/5</strong></td>
+          <td>
+            {% with label=review.rating_label %}
+            <span class="badge bg-{{ label.1 }}">{{ label.0 }}</span>
+            {% endwith %}
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'review_detail' review.pk %}" class="btn btn-sm btn-outline-primary"><i class="bx bx-show"></i></a>
+              <a href="{% url 'review_edit' review.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bx bx-edit"></i></a>
+              <a href="{% url 'review_delete' review.pk %}" class="btn btn-sm btn-outline-danger"><i class="bx bx-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center py-5 text-muted">No reviews yet. <a href="{% url 'review_create' %}">Create one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

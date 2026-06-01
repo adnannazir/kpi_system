@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - KPITrack{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-1">
+      <li class="breadcrumb-item"><a href="{% url 'employee_list' %}">Employees</a></li>
+      <li class="breadcrumb-item active">{{ title }}</li>
+    </ol>
+  </nav>
+  <h4 class="fw-bold mb-0">{{ title }}</h4>
+</div>
+<div class="card">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row g-3">
+        {% for field in form %}
+        <div class="col-md-{% if field.field.widget.input_type == 'textarea' %}12{% else %}6{% endif %}">
+          <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+          {% if field.field.widget.input_type == 'select' %}
+            <select name="{{ field.html_name }}" class="form-select {% if field.errors %}is-invalid{% endif %}" {% if field.field.required %}required{% endif %}>
+              {% for val, label in field.field.choices %}
+                <option value="{{ val }}" {% if field.value|stringformat:"s" == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          {% elif field.field.widget.input_type == 'textarea' %}
+            <textarea name="{{ field.html_name }}" class="form-control {% if field.errors %}is-invalid{% endif %}" rows="3">{{ field.value|default:'' }}</textarea>
+          {% elif field.field.widget.input_type == 'checkbox' %}
+            <div class="form-check mt-2">
+              <input type="checkbox" name="{{ field.html_name }}" class="form-check-input" {% if field.value %}checked{% endif %}>
+              <label class="form-check-label">{{ field.label }}</label>
+            </div>
+          {% else %}
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="form-control {% if field.errors %}is-invalid{% endif %}"
+                   value="{{ field.value|default:'' }}" {% if field.field.required %}required{% endif %}
+                   {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
+                   {% if field.field.widget.attrs.min %}min="{{ field.field.widget.attrs.min }}"{% endif %}
+                   {% if field.field.widget.attrs.max %}max="{{ field.field.widget.attrs.max }}"{% endif %}
+                   {% if field.field.widget.attrs.step %}step="{{ field.field.widget.attrs.step }}"{% endif %}>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i>Save</button>
+        <a href="{% url 'employee_list' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

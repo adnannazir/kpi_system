@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Goals & OKRs - KPITrack{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Goals & OKRs</h4>
+    <p class="text-muted mb-0">Track employee objectives and key results</p>
+  </div>
+  <a href="{% url 'goal_create' %}" class="btn btn-primary"><i class="bx bx-plus me-1"></i>Create Goal</a>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr><th>Goal</th><th>Employee</th><th>Priority</th><th>Due Date</th><th>Progress</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for goal in goals %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ goal.title }}</div>
+            <small class="text-muted">{{ goal.description|truncatechars:60 }}</small>
+          </td>
+          <td>
+            <a href="{% url 'employee_detail' goal.employee.pk %}" class="text-body">{{ goal.employee.full_name }}</a>
+            <small class="d-block text-muted">{{ goal.employee.department.name|default:"—" }}</small>
+          </td>
+          <td>
+            <span class="badge bg-label-{% if goal.priority == 'critical' %}danger{% elif goal.priority == 'high' %}warning{% elif goal.priority == 'medium' %}primary{% else %}secondary{% endif %}">
+              {{ goal.get_priority_display }}
+            </span>
+          </td>
+          <td>
+            {{ goal.due_date|date:"M d, Y" }}
+            {% if goal.due_date < today and goal.status not in 'completed,cancelled' %}
+              <small class="d-block text-danger"><i class="bx bx-error-circle"></i> Overdue</small>
+            {% endif %}
+          </td>
+          <td style="min-width:120px">
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress flex-grow-1" style="height:6px">
+                <div class="progress-bar bg-{% if goal.progress == 100 %}success{% elif goal.progress >= 60 %}primary{% elif goal.progress >= 30 %}warning{% else %}danger{% endif %}"
+                     style="width:{{ goal.progress }}%"></div>
+              </div>
+              <small>{{ goal.progress }}%</small>
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-label-{% if goal.status == 'completed' %}success{% elif goal.status == 'in_progress' %}primary{% elif goal.status == 'cancelled' %}secondary{% else %}warning{% endif %}">
+              {{ goal.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'goal_edit' goal.pk %}" class="btn btn-sm btn-outline-primary"><i class="bx bx-edit"></i></a>
+              <a href="{% url 'goal_delete' goal.pk %}" class="btn btn-sm btn-outline-danger"><i class="bx bx-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-5 text-muted">No goals created yet. <a href="{% url 'goal_create' %}">Create one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

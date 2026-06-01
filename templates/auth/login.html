@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - KPITrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/vendor/css/core.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/vendor/css/theme-default.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/css/demo.css" />
+</head>
+<body>
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <div class="card">
+          <div class="card-body">
+            <div class="app-brand justify-content-center mb-4">
+              <span class="app-brand-name demo fs-3 fw-bold" style="color:#696cff">KPI<strong>Track</strong></span>
+            </div>
+            <h4 class="mb-2">Welcome to KPITrack! 👋</h4>
+            <p class="mb-4 text-muted">Sign in to manage employee performance & KPIs</p>
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" autofocus required />
+              </div>
+              <div class="mb-3 form-password-toggle">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-group input-group-merge">
+                  <input type="password" id="password" class="form-control form-control-merge" name="password" placeholder="············" required />
+                  <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+              </div>
+            </form>
+            <p class="text-center mt-2 text-muted small">Default: admin / admin123</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/vendor/js/bootstrap.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/themeselection/sneat-bootstrap-html-admin-template-free@1.0.0/assets/js/main.js"></script>
+</body>
+</html>

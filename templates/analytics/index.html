@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Analytics - KPITrack{% endblock %}
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h4 class="fw-bold mb-1">Analytics</h4>
+  <p class="text-muted mb-0">Performance insights across the organization</p>
+</div>
+
+<div class="row mb-4">
+  <!-- Department Performance Table -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="mb-0">Department Performance</h5></div>
+      <div class="card-body">
+        {% if dept_data_raw %}
+          {% for dept in dept_data_raw %}
+          <div class="mb-3 {% if not forloop.last %}pb-3 border-bottom{% endif %}">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-semibold">{{ dept.name }}</span>
+              <span class="fw-bold text-primary">{{ dept.score }}/5</span>
+            </div>
+            <div class="progress" style="height:8px">
+              <div class="progress-bar bg-primary" style="width:{% widthratio dept.score 5 100 %}%"></div>
+            </div>
+            <small class="text-muted">Based on {{ dept.count }} review{{ dept.count|pluralize }}</small>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center py-4">No review data available yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Department Bar Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="mb-0">Department Score Chart</h5></div>
+      <div class="card-body">
+        <canvas id="deptChart" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <!-- Monthly Review Trend -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="mb-0">Monthly Review Activity</h5></div>
+      <div class="card-body">
+        <canvas id="trendChart" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Achievement by Category -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header"><h5 class="mb-0">KPI Achievement by Category</h5></div>
+      <div class="card-body">
+        {% if category_kpi_raw %}
+          {% for cat in category_kpi_raw %}
+          <div class="mb-3 {% if not forloop.last %}pb-3 border-bottom{% endif %}">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-semibold">{{ cat.name }}</span>
+              <span>{{ cat.achieved }}/{{ cat.total }} <small class="text-muted">({{ cat.rate }}%)</small></span>
+            </div>
+            <div class="progress" style="height:8px">
+              <div class="progress-bar bg-{% if cat.rate >= 80 %}success{% elif cat.rate >= 60 %}warning{% else %}danger{% endif %}"
+                   style="width:{{ cat.rate }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center py-4">No KPI data available yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const deptData = {{ dept_data|safe }};
+const trendData = {{ monthly_trend|safe }};
+
+// Department Chart
+if (deptData.length > 0) {
+  new Chart(document.getElementById('deptChart'), {
+    type: 'bar',
+    data: {
+      labels: deptData.map(d => d.name),
+      datasets: [{
+        label: 'Avg Score',
+        data: deptData.map(d => d.score),
+        backgroundColor: 'rgba(105, 108, 255, 0.2)',
+        borderColor: '#696cff',
+        borderWidth: 2,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { min: 0, max: 5, ticks: { stepSize: 1 } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+} else {
+  document.getElementById('deptChart').parentElement.innerHTML = '<p class="text-muted text-center py-4">No data yet.</p>';
+}
+
+// Trend Chart
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trendData.map(d => d.month),
+    datasets: [{
+      label: 'Reviews',
+      data: trendData.map(d => d.count),
+      borderColor: '#71dd37',
+      backgroundColor: 'rgba(113, 221, 55, 0.1)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#71dd37',
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+{% endblock %}
